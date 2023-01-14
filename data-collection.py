@@ -9,7 +9,9 @@ import datetime
 
 
 class Assets:
-
+    """
+    Has been designed only considering NYSE and Nasdaq stock market times.
+    """
     def __init__(self, tickers):
         self.tickers = tickers
         self.today = datetime.date.today()
@@ -29,7 +31,7 @@ class Assets:
             # collect 5-day historical data
             ticker_history = ticker_object.history(start=self.delta_5day,
                                                    end=self.today,
-                                                   interval="1d")
+                                                   interval="1m")
             # adjust columns
             ticker_history.index.name = "Date"
             ticker_history.reset_index(inplace=True)
@@ -41,6 +43,15 @@ class Assets:
             current_prices[ticker] = latest_price_tuple
 
         return current_prices
+
+    def is_latest(self):
+        """
+        Returns True if latest price is current day, False otherwise.
+
+        :return:
+        check: (boolean)
+        """
+        pass
 
     def get_long(self):
         """Get 200 days worth of stock/crypto data for provided ticker
@@ -108,4 +119,7 @@ curr_price = alert.get_current_price()
 ma_50 = alert.moving_average(50)
 ma_200 = alert.moving_average(200)
 print(f"{curr_price}\n{ma_50.items()}\n{ma_200.items()}")
-
+ts = pd.Timestamp(curr_price[ticker_list[0]][0])
+ts = ts.to_datetime64()
+print(ts, datetime.datetime.now())
+# print(ts == datetime.date.today())
