@@ -26,18 +26,24 @@ class Assets:
         data: DataFrame table containing 200-days worth of price-close
               data for each ticker.
         """
+        # dictionary to store ticker and dataframe of ticker close price
         price_data = {}
 
         for ticker in self.tickers:
             ticker_object = yf.Ticker(ticker)
+            # collect 200-day historical data
             ticker_history = ticker_object.history(start=self.delta_200day,
                                                    end=self.today,
                                                    interval="1d")
+            # adjust columns
             ticker_history.index.name = "Date"
             ticker_history.reset_index(inplace=True)
+            # store only date and close price
             close_stock_history = ticker_history[["Date", "Close"]].copy()
+            # update dictionary
             price_data[ticker] = close_stock_history
 
+        # combine price_data entries into single entry
         price_data = {k: v.set_index('Date') for k, v in price_data.items()}
         price_df = pd.concat(price_data, axis=1)
         price_df.columns = price_df.columns.droplevel(-1)
