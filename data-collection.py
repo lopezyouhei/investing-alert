@@ -70,11 +70,12 @@ class Assets:
         moving_averages = {}
         for ticker in self.tickers:
             moving_average = price_df[ticker].rolling(days).mean()[-1]
-            moving_averages[moving_average] = moving_average
+            moving_averages[ticker] = moving_average
 
         return moving_averages
 
 
 ticker_list = ["aapl", "tsla"]
 alert = Assets(ticker_list)
-print(alert.get_long())
+ma_200 = alert.moving_average(200)
+print(ma_200.items())
