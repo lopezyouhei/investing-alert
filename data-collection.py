@@ -14,6 +14,33 @@ class Assets:
         self.tickers = tickers
         self.today = datetime.date.today()
         self.delta_300day = self.today - datetime.timedelta(300)
+        self.delta_5day = self.today - datetime.timedelta(5)
+
+    def get_current_price(self):
+        """
+        Get current price of initialized tickers
+        :return:
+        current_prices: dictionary containing ticker and corresponding
+                        tuple of last available date and price.
+        """
+        current_prices = {}
+        for ticker in self.tickers:
+            ticker_object = yf.Ticker(ticker)
+            # collect 5-day historical data
+            ticker_history = ticker_object.history(start=self.delta_5day,
+                                                   end=self.today,
+                                                   interval="1d")
+            # adjust columns
+            ticker_history.index.name = "Date"
+            ticker_history.reset_index(inplace=True)
+            # store only date and close price
+            close_stock_history = ticker_history[["Date", "Close"]].copy()
+            latest_date = close_stock_history["Date"].iloc[-1]
+            latest_price = close_stock_history["Close"].iloc[-1]
+            latest_price_tuple = (latest_date, latest_price)
+            current_prices[ticker] = latest_price_tuple
+
+        return current_prices
 
     def get_long(self):
         """Get 200 days worth of stock/crypto data for provided ticker
@@ -77,5 +104,8 @@ class Assets:
 
 ticker_list = ["aapl", "tsla"]
 alert = Assets(ticker_list)
+curr_price = alert.get_current_price()
+ma_50 = alert.moving_average(50)
 ma_200 = alert.moving_average(200)
-print(ma_200.items())
+print(f"{curr_price}\n{ma_50.items()}\n{ma_200.items()}")
+
