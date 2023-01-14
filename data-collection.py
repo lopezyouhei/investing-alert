@@ -38,12 +38,13 @@ class Assets:
             close_stock_history = ticker_history[["Date", "Close"]].copy()
             price_data[ticker] = close_stock_history
 
-            price_data = {k: v.set_index('Date') for k, v in price_data.items()}
-            price_df = pd.concat(price_data, axis=1)
-            price_df.columns = price_df.columns.droplevel(-1)
+        price_data = {k: v.set_index('Date') for k, v in price_data.items()}
+        price_df = pd.concat(price_data, axis=1)
+        price_df.columns = price_df.columns.droplevel(-1)
+
         return price_df
 
 
 ticker_list = ["aapl", "tsla"]
 alert = Assets(ticker_list)
-print(alert)
+print(alert.get_long())
